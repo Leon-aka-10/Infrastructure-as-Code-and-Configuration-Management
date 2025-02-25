@@ -1,3 +1,4 @@
+---
 - name: Deploy Application to AKS
   hosts: localhost
   tasks:
