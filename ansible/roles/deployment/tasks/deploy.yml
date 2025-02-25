@@ -1,0 +1,8 @@
+- name: Deploy Application to AKS
+  hosts: localhost
+  tasks:
+    - name: Authenticate with Azure CLI
+      command: az aks get-credentials --resource-group todo-app-rg --name todo-app-cluster
+
+    - name: Apply Kubernetes manifests
+      command: kubectl apply -f k8s/
