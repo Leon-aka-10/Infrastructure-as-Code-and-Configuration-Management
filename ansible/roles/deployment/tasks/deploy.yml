@@ -2,31 +2,48 @@
 - name: Deploy Application to AKS
   hosts: localhost
   tasks:
-    - name: Authenticate with Azure CLI
-      command: az aks get-credentials --resource-group myResourceGroup --name myAKSCluster
+    - block:
+        - name: Authenticate with Azure CLI
+          command: az aks get-credentials --resource-group myResourceGroup --name myAKSCluster
 
-    - name: Login to Server
-      uses: appleboy/ssh-action@v1.0.0
-      with:
-          host: 20.213.11.2
-          username: azureuser
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          port: 22
+- name: Deploy Terraform and Kubernetes Manifests
+  hosts: my_remote_server
+  vars:
+    ansible_host: 20.213.11.2
+    ansible_user: azureuser
+    ansible_ssh_private_key_file: ~/.ssh/id_rsa  # Update this with the correct path
+    ansible_port: 22
+  tasks:
+    - block:
+        - name: Install Terraform on Remote Server
+          shell: |
+            cd /tmp
+            sudo apt update && sudo apt install -y wget unzip
+            wget -O terraform.zip https://releases.hashicorp.com/terraform/1.7.2/terraform_1.7.2_linux_amd64.zip
+            unzip terraform.zip
+            sudo mv terraform /usr/local/bin/
+            terraform --version
 
-    - name: Deploy terrafrom scripts
-      command: |
-          cd Terraform/
-          sudo apt update && sudo apt install -y wget unzip
-          wget -O terraform.zip https://releases.hashicorp.com/terraform/1.7.2/terraform_1.7.2_linux_amd64.zip
-          unzip terraform.zip
-          sudo mv terraform /usr/local/bin/
-          terraform --version
-          az login --tenant 5fe78ac1-1afe-4009-aa04-a71efb4a5042
-          terraform init
-          terraform import azurerm_resource_group.aks /subscriptions/61c877df-9dd0-41e9-95e1-db9b008c5f72/resourceGroups/myResourceGroup
-          terraform state list
-          terraform plan
-          terraform apply -auto-approve
+        - name: Authenticate with Azure CLI
+          shell: az login --tenant 5fe78ac1-1afe-4009-aa04-a71efb4a5042
 
-    - name: Apply Kubernetes manifests
-      command: kubectl apply -f k8s/
+        - name: Run Terraform Deployment
+          shell: |
+            cd /home/azureuser/Terraform
+            terraform init
+            terraform import azurerm_resource_group.aks /subscriptions/61c877df-9dd0-41e9-95e1-db9b008c5f72/resourceGroups/myResourceGroup
+            terraform state list
+            terraform plan
+            terraform apply -auto-approve
+
+        - name: Apply Kubernetes Manifests
+          shell: kubectl apply -f /home/azureuser/k8s/
+
+      always:
+        - name: Ensure Terraform directory permissions are correct
+          file:
+            path: /home/azureuser/Terraform
+            state: directory
+            mode: "0755"
+
+# Ensure the file ends with a blank line
