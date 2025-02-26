@@ -29,7 +29,7 @@
 
         - name: Run Terraform Deployment
           shell: |
-            cd /home/azureuser/Terraform
+            cd /home/azureuser/terraform
             terraform init
             terraform import azurerm_resource_group.aks /subscriptions/61c877df-9dd0-41e9-95e1-db9b008c5f72/resourceGroups/myResourceGroup
             terraform state list
@@ -42,7 +42,7 @@
       always:
         - name: Ensure Terraform directory permissions are correct
           file:
-            path: /home/azureuser/Terraform
+            path: /home/azureuser/terraform
             state: directory
             mode: "0755"
 
