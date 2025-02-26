@@ -20,7 +20,6 @@ This project covers the containerization, deployment, and automation of a micros
 │   ├── variables.tf
 │   ├── outputs.tf
 │   ├── providers.tf
-│   ├── modules/
 │
 ├── ansible/
 │   ├── roles/
