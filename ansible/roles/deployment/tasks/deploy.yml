@@ -45,5 +45,3 @@
             path: /home/azureuser/terraform
             state: directory
             mode: "0755"
-
-# Ensure the file ends with a blank line
