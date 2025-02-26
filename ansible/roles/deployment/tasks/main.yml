@@ -1,0 +1,17 @@
+---
+          - name: Clone application repository
+            git:
+              repo: "{{ app_repo_url }}"
+              dest: /opt/app
+              version: main
+
+          - name: Deploy application with Docker Compose
+            shell: |
+              cd /opt/app && docker-compose up -d
+
+          - name: Configure Traefik for SSL/TLS
+            template:
+              src: traefik.yml.j2
+              dest: /opt/app/traefik.yml
+            notify:
+              - Restart Traefik
