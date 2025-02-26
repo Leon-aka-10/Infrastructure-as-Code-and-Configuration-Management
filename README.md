@@ -17,14 +17,16 @@ This project covers the containerization, deployment, and automation of a micros
 │
 ├── terraform/
 │   ├── main.tf
-│   ├── variables.tf
-│   ├── outputs.tf
-│   ├── providers.tf
 │
 ├── ansible/
 │   ├── roles/
+│   │   ├── dependencies/
+│   │   │   ├── tasks/main.yml
 │   │   ├── deployment/
-│   │   │   ├── tasks/deploy.yml
+│   │   │   ├── tasks/main.yml 
+│   │   ├── templates/
+│   │       ├── traefik.yml.j2
+│   ├── site.yml
 │
 └── README.md
 ```
