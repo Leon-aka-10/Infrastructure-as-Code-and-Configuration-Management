@@ -6,27 +6,16 @@ This project covers the containerization, deployment, and automation of a micros
 ## Project Structure
 ```
 
-├── k8s/
-│   ├── frontend-deployment.yml
-│   ├── auth-api-deployment.yml
-│   ├── todos-api-deployment.yml
-│   ├── users-api-deployment.yml
-│   ├── log-processor-deployment.yml
-│   ├── redis-deployment.yml
-│   ├── traefik-ingress.yml
-│
 ├── terraform/
 │   ├── main.tf
-│
+│   ├── variables.tf
 ├── ansible/
 │   ├── roles/
 │   │   ├── dependencies/
 │   │   │   ├── tasks/main.yml
 │   │   ├── deployment/
 │   │   │   ├── tasks/main.yml 
-│   │   ├── templates/
-│   │       ├── traefik.yml.j2
-│   ├── site.yml
+│   ├── playbook.yml
 │
 └── README.md
 ```

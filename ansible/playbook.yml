@@ -1,0 +1,6 @@
+- name: Configure and deploy microservices
+  hosts: microservices
+  become: true
+  roles:
+    - dependencies
+    - deployment
