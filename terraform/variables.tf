@@ -13,3 +13,6 @@ variable "admin_user" {
 variable "ssh_public_key" {
   default = "~/.ssh/id_rsa.pub"
 }
+
+variable "azure_subscription_id" {}
+variable "azure_tenant_id" {}
