@@ -6,16 +6,18 @@ This project covers the containerization, deployment, and automation of a micros
 ## Project Structure
 ```
 
-├── terraform/
-│   ├── main.tf
-│   ├── variables.tf
 ├── ansible/
 │   ├── roles/
 │   │   ├── dependencies/
 │   │   │   ├── tasks/main.yml
 │   │   ├── deployment/
 │   │   │   ├── tasks/main.yml 
+│   ├── inventory.txt
 │   ├── playbook.yml
+│
+├── terraform/
+│   ├── main.tf
+│   ├── variables.tf
 │
 └── README.md
 ```
