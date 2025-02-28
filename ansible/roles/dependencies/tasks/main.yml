@@ -1,13 +1,53 @@
-- name: Install required packages
+---
+- name: Ensure old Docker versions are removed
   apt:
     name:
       - docker.io
       - docker-compose
+      - containerd
+      - runc
+    state: absent
+    purge: true
+  ignore_errors: yes
+
+- name: Install required system packages
+  apt:
+    name:
+      - curl
+      - software-properties-common
+      - ca-certificates
+      - gnupg
     state: present
     update_cache: yes
 
-- name: Ensure Docker service is running
+- name: Add Docker GPG key
+  shell: |
+    sudo mkdir -p /etc/apt/keyrings
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo tee /etc/apt/keyrings/docker.asc > /dev/null
+    sudo chmod a+r /etc/apt/keyrings/docker.asc
+  args:
+    executable: /bin/bash
+
+- name: Add Docker official repository
+  shell: |
+    echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+    sudo apt update -y
+  args:
+    executable: /bin/bash
+
+- name: Install Docker and dependencies
+  apt:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin
+    state: present
+    update_cache: yes
+
+- name: Ensure Docker service is enabled and running
   systemd:
     name: docker
-    state: started
     enabled: yes
+    state: started

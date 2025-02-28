@@ -93,10 +93,51 @@ resource "azurerm_linux_virtual_machine" "vm" {
 
   source_image_reference {
     publisher = "Canonical"
-    offer     = "UbuntuServer"
-    sku       = "18.04-LTS"
+    offer     = "0001-com-ubuntu-server-jammy"
+    sku       = "22_04-lts"
     version   = "latest"
   }
+
+  custom_data = base64encode(<<-EOF
+    #!/bin/bash
+    # Update system
+    sudo apt update -y && sudo apt upgrade -y
+
+    # Install dependencies
+    sudo apt install -y curl git unzip apt-transport-https software-properties-common
+
+    # Install Docker
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+    sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+    sudo apt update -y
+    sudo apt install -y docker-ce docker-ce-cli containerd.io
+
+    # Add user to Docker group
+    sudo usermod -aG docker ${var.admin_user}
+
+    # Install Docker Compose
+    sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+    sudo chmod +x /usr/local/bin/docker-compose
+
+    # Install Terraform
+    sudo apt-get install -y gnupg software-properties-common
+    wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+    echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+    sudo apt update -y
+    sudo apt install -y terraform
+
+    # Install Ansible
+    sudo apt-add-repository --yes --update ppa:ansible/ansible
+    sudo apt install -y ansible
+
+    # Fix Docker credential issue
+    echo '{ "credsStore": "" }' | sudo tee /home/${var.admin_user}/.docker/config.json
+    sudo chown ${var.admin_user}:${var.admin_user} /home/${var.admin_user}/.docker/config.json
+
+    # Restart services
+    sudo systemctl restart docker
+    EOF
+  )
 
   provisioner "local-exec" {
     command = <<EOT
@@ -104,9 +145,9 @@ resource "azurerm_linux_virtual_machine" "vm" {
       echo "${azurerm_public_ip.public_ip.ip_address} ansible_user=${var.admin_user}" >> inventory.txt
     EOT
   }
-
 }
 
 output "public_ip" {
   value = azurerm_public_ip.public_ip.ip_address
 }
+
