@@ -1,0 +1,2 @@
+[microservices]
+40.117.172.26 ansible_user=azureuser
