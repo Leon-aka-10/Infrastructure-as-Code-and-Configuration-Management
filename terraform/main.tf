@@ -97,8 +97,12 @@ resource "azurerm_linux_virtual_machine" "vm" {
   }
 
   provisioner "local-exec" {
-    command = "echo '[microservices]\n${azurerm_public_ip.public_ip.ip_address} ansible_user=${var.admin_user}' > ansible_inventory"
+    command = <<EOT
+      echo "[microservices]" > inventory.txt
+      echo "${azurerm_public_ip.public_ip.ip_address} ansible_user=${var.admin_user}" >> inventory.txt
+    EOT
   }
+
 }
 
 output "public_ip" {
