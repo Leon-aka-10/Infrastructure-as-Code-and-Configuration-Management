@@ -8,13 +8,11 @@ metadata:
 spec:
   tls:
     - hosts:
-        - domain.com
-        - auth.domain.com
-        - todos.domain.com
-        - users.domain.com
+        - 52.138.55.44
+
       secretName: traefik-tls
   rules:
-    - host: domain.com
+    - host: 52.138.55.44
       http:
         paths:
           - path: /
@@ -23,8 +21,8 @@ spec:
               service:
                 name: frontend
                 port:
-                  number: 80
-    - host: auth.domain.com
+                  number: 8080
+    - host: 52.138.55.44
       http:
         paths:
           - path: /
@@ -33,8 +31,8 @@ spec:
               service:
                 name: auth-api
                 port:
-                  number: 8080
-    - host: todos.domain.com
+                  number: 8081
+    - host: 52.138.55.44
       http:
         paths:
           - path: /
@@ -43,8 +41,8 @@ spec:
               service:
                 name: todos-api
                 port:
-                  number: 8080
-    - host: users.domain.com
+                  number: 8082
+    - host: 52.138.55.44
       http:
         paths:
           - path: /
@@ -53,4 +51,4 @@ spec:
               service:
                 name: users-api
                 port:
-                  number: 8080
+                  number: 8083

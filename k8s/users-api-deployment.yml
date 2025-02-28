@@ -18,7 +18,14 @@ spec:
         - name: users-api
           image: YOUR_AZURE_CONTAINER_REGISTRY/users-api:latest
           ports:
-            - containerPort: 8080
+            - containerPort: 8083
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+            requests:
+              cpu: "250m"
+              memory: "128Mi"
 ---
 apiVersion: v1
 kind: Service
@@ -30,5 +37,5 @@ spec:
     app: users-api
   ports:
     - protocol: TCP
-      port: 8080
-      targetPort: 8080
+      port: 8083
+      targetPort: 8083
